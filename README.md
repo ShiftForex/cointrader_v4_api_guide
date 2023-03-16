@@ -49,7 +49,7 @@ Document with examples of often used graphql requests
 
 ## Get started
 
-Playground: https://vakotrade.cryptosrvc-dev.com/graphql
+Playground: https://vakotrade-demo.cryptosrvc.com/graphql
 
 In order to quickly get started we have special demo environment where you can play around. JWT tokens generated after following mutations live very long time. So, you can reuse them not worring on expiration time. 
 
