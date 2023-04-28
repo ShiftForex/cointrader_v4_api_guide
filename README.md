@@ -32,6 +32,9 @@ Document with examples of often used graphql requests
         - [How to calculate and return fee for current user, payment type and currency?](#9-question-how-to-calculate-and-return-fee-for-current-user-payment-type-and-currency)
         - [How to get the profile data for certain user?](#14-question-how-to-get-the-profile-data-for-certain-user)
         - [How to get deposit address details for crypto deposits?](#15-question-how-to-get-deposit-address-details-for-crypto-deposits)                  
+        - [How to create limit order?](#18-question-how-to-create-limit-order)                  
+        - [How to cancel open order?](#19-question-how-to-cancel-open-order)                  
+        - [How to get open orders?](#20-question-how-to-get-open-orders)                  
          
     - **For admins only**
         - [How to get list of instruments on exchange?](#1-question-how-to-get-list-of-instruments-on-exchange)
@@ -44,6 +47,9 @@ Document with examples of often used graphql requests
         - [How to delete fee group?](#13-question-how-to-delete-fee-group)
         - [How to add new currency to the platform?](#16-question-how-to-add-new-currency-to-the-platform)
         - [How to create user](#17-question-how-to-create-user)
+        - [How to create instrument strategy](#21-question-how-to-create-instrument-strategy)
+        - [How to update instrument strategy](#22-question-how-to-update-instrument-strategy)
+        - [How to delete instrument strategy](#23-question-how-to-delete-instrument-strategy)
   
  5. **[Fees & Limits structure](#fees-and-limits-structure)**
 
@@ -2161,6 +2167,383 @@ mutation {
   }
 }
 ```
+[back to the top &#11023;](#table-of-contents)
+
+### 18. Question: How to create limit order?
+#### roles: [`admin`, `trader`]
+
+### Answer:
+
+```graphql
+mutation {
+  create_order(
+    instrument_id: "BTCUSDT"
+    quantity: 0.01
+    price: 40000
+    quantity_mode: base
+    side: buy
+    time_in_force: fok
+    type: limit
+    # user_id: "" // Effective for admins
+  ) {
+    client_order_id
+    created_at
+    created_at_iso
+    executed_quantity
+    expires_at
+    expires_at_iso
+    instrument_id
+    message
+    order_id
+    price
+    quantity
+    quantity_mode
+    remaining_quantity
+    side
+    status
+    time_in_force
+    type
+    updated_at
+    updated_at_iso
+  }
+}
+```
+
+Instructions time_in_force
+
+```
+fok - fill or kill
+ioc - immediate or cancel
+gtc - good ‘til canceled
+gtd - good till date/day/time
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "create_order": {
+      "client_order_id": null,
+      "created_at": "2023-04-28 16:56:46",
+      "created_at_iso": "2023-04-28T16:56:46+03:00",
+      "executed_quantity": 0,
+      "expires_at": null,
+      "expires_at_iso": null,
+      "instrument_id": "BTCUSDT",
+      "message": null,
+      "order_id": "ac4a92b8-080e-45bc-bd99-65c4016104b3",
+      "price": 40000,
+      "quantity": 0.01,
+      "quantity_mode": "base",
+      "remaining_quantity": 0.01,
+      "side": "buy",
+      "status": "new",
+      "time_in_force": "fok",
+      "type": "limit",
+      "updated_at": "2023-04-28 16:56:46",
+      "updated_at_iso": "2023-04-28T16:56:46+03:00"
+    }
+  }
+}
+```
+[back to the top &#11023;](#table-of-contents)
+
+### 19. Question: How to cancel open order?
+#### roles: [`admin`, `trader`]
+
+### Answer:
+
+```graphql
+mutation {
+  cancel_order(
+    order_id: "98443830-20f8-493f-a5ee-fb248e38ea10"
+    message: "To demonstrate canceling orders"
+    # user_id: "" // Effective for admins
+  )
+}
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "cancel_order": true
+  }
+}
+```
+[back to the top &#11023;](#table-of-contents)
+
+### 20. Question: How to get open orders?
+#### roles: [`admin`, `trader`]
+
+### Answer:
+
+```graphql
+query {
+  open_orders(
+    instrument_id: "AVAXBTC"
+    status: new
+    side: sell
+    pager: { offset: 0, limit: 8 }
+  ) {
+    order_id
+    type
+    side
+    status
+    price
+    quantity
+    executed_quantity
+    remaining_quantity
+    quantity_mode
+    instrument_id
+    message
+    updated_at
+    created_at
+    expires_at
+  }
+}
+```
+
+Available parameters for filtering orders
+
+```
+client_order_id
+dateRange
+instrument_id
+message
+order_id
+pager
+search
+side
+sort
+status
+time_in_force
+user_id // Effective for admins only
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "open_orders": [
+      {
+        "order_id": "c7d3cf70-5eaa-4cf6-abba-28c74e948af6",
+        "type": "limit",
+        "side": "sell",
+        "status": "new",
+        "price": 20000,
+        "quantity": 1,
+        "executed_quantity": 0,
+        "remaining_quantity": 1,
+        "quantity_mode": "base",
+        "instrument_id": "AVAXBTC",
+        "message": null,
+        "updated_at": "1674573756000",
+        "created_at": "1674573756000",
+        "expires_at": null
+      },
+      {
+        "order_id": "c4507eef-1194-4cbf-a675-1b55a497a8f2",
+        "type": "limit",
+        "side": "sell",
+        "status": "new",
+        "price": 20000,
+        "quantity": 1,
+        "executed_quantity": 0,
+        "remaining_quantity": 1,
+        "quantity_mode": "base",
+        "instrument_id": "AVAXBTC",
+        "message": null,
+        "updated_at": "1674569807000",
+        "created_at": "1674569807000",
+        "expires_at": null
+      },
+      {
+        "order_id": "070d5291-4e98-4bde-a6a8-0c7de334ef82",
+        "type": "limit",
+        "side": "sell",
+        "status": "new",
+        "price": 20000,
+        "quantity": 1,
+        "executed_quantity": 0,
+        "remaining_quantity": 1,
+        "quantity_mode": "base",
+        "instrument_id": "AVAXBTC",
+        "message": null,
+        "updated_at": "1674569723000",
+        "created_at": "1674569723000",
+        "expires_at": null
+      }
+    ]
+  }
+}
+```
+
+[back to the top &#11023;](#table-of-contents)
+
+### 21. Question: How to create instrument strategy?
+#### roles: [`admin`]
+
+### Answer:
+
+```graphql
+mutation {
+  create_instrument_strategy(
+    active_layers_count: 10
+    hedge_quantity_increment: 0.000000001
+    hedge_quantity_trigger_buy: 0
+    hedge_quantity_trigger_sell: 0
+    hedging_adapter_id: "NEXUS"
+    hedging_enabled: on
+    instrument_id: "ETHUSDC"
+    is_active: on
+    layer_discount_factor: 0.75
+    loop_interval: 5000
+    markup_ask: 0.01
+    markup_bid: 0.01
+    order_max_quantity: 500
+    order_min_quantity: 0.001
+    order_ttl_ms: 15000
+    version: 0
+  ) {
+    active_layers_count
+    error
+    hedge_balance
+    hedge_quantity_increment
+    hedge_quantity_trigger_buy
+    hedge_quantity_trigger_sell
+    hedging_adapter_id
+    hedging_enabled 
+    instrument_id
+    instrument_strategy_id
+    is_active
+    layer_discount_factor
+    loop_interval
+    markup_ask
+    markup_bid
+    meta
+    order_max_quantity
+    order_min_quantity
+    order_ttl_ms
+    serial_id
+    updated_at
+    updated_at_iso
+    version
+  }
+}
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "create_instrument_strategy": {
+      "active_layers_count": 10,
+      "error": null,
+      "hedge_balance": null,
+      "hedge_quantity_increment": 1e-9,
+      "hedge_quantity_trigger_buy": 0,
+      "hedge_quantity_trigger_sell": 0,
+      "hedging_adapter_id": "NEXUS",
+      "hedging_enabled": "on",
+      "instrument_id": "ETHUSDC",
+      "instrument_strategy_id": "ETHUSDC-NEXUS",
+      "is_active": "on",
+      "layer_discount_factor": 0.75,
+      "loop_interval": 5000,
+      "markup_ask": 0.01,
+      "markup_bid": 0.01,
+      "meta": null,
+      "order_max_quantity": 500,
+      "order_min_quantity": 0.001,
+      "order_ttl_ms": 15000,
+      "serial_id": 38,
+      "updated_at": "2023-04-28 18:13:16",
+      "updated_at_iso": "2023-04-28T18:13:16+03:00",
+      "version": 0
+    }
+  }
+}
+```
+
+[back to the top &#11023;](#table-of-contents)
+
+### 22. Question: How to update instrument strategy?
+#### roles: [`admin`]
+
+### Answer:
+
+```graphql
+mutation {
+  update_instrument_strategy(
+    instrument_strategy_id: "ETHUSDC-NEXUS"
+    hedging_enabled: off
+    markup_ask: 0.05
+    markup_bid: 0.05
+  )
+}
+```
+
+Fields available to update
+
+```  
+active_layers_count
+hedge_quantity_increment
+hedge_quantity_trigger_buy
+hedge_quantity_trigger_sell
+hedging_adapter_id
+hedging_enabled
+instrument_id
+is_active
+layer_discount_factor
+loop_interval
+markup_ask
+markup_bid
+order_max_quantity
+order_min_quantity
+order_ttl_ms
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "update_instrument_strategy": true
+  }
+}
+```
+
+[back to the top &#11023;](#table-of-contents)
+
+### 23. Question: How to delete instrument strategy?
+#### roles: [`admin`]
+
+### Answer:
+
+```graphql
+mutation {
+  delete_instrument_strategy(
+    hedging_adapter_id: "NEXUS"
+    instrument_id: "ETHUSDC"
+  )
+}
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "delete_instrument_strategy": true
+  }
+}
+```
+
 [back to the top &#11023;](#table-of-contents)
 
 ## Fees and Limits structure
