@@ -50,6 +50,9 @@ Document with examples of often used graphql requests
         - [How to create instrument strategy](#21-question-how-to-create-instrument-strategy)
         - [How to update instrument strategy](#22-question-how-to-update-instrument-strategy)
         - [How to delete instrument strategy](#23-question-how-to-delete-instrument-strategy)
+        - [How to update payment fees](#24-question-how-to-update-payment-fees)
+        - [How to update trading fees](#25-question-how-to-update-trading-fees)
+        - [How to update strategy markups](#26-question-how-to-update-strategy-markups)
   
  5. **[Fees & Limits structure](#fees-and-limits-structure)**
 
@@ -2540,6 +2543,98 @@ mutation {
 {
   "data": {
     "delete_instrument_strategy": true
+  }
+}
+```
+
+[back to the top &#11023;](#table-of-contents)
+
+### 24. Question: How to update payment fees?
+#### roles: [`admin`]
+
+### Answer:
+
+```graphql
+mutation {
+  update_payment_fee(
+    currency_id: "USDT"
+    fee_group_id: "default"
+    # for deposit fees
+    deposit_flat_fee: 0.01
+    deposit_progressive_fee: 0.01
+    # for withdrawal fees
+    withdrawal_flat_fee: 0.05
+    withdrawal_progressive_fee: 0.05
+  )
+}
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "update_payment_fee": true
+  }
+}
+```
+
+[back to the top &#11023;](#table-of-contents)
+
+### 25. Question: How to update trading fees?
+#### roles: [`admin`]
+
+### Answer:
+
+```graphql
+mutation {
+  update_trading_fee(
+    instrument_id: "BTCUSDT"
+    fee_group_id: "default"
+    maker_flat: 0.01
+    maker_progressive: 0.01
+    taker_flat: 0.05
+    taker_progressive: 0.05
+  )
+}
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "update_trading_fee": true
+  }
+}
+```
+
+#### Note: 
+All payment or trading fees correspond to fee groups. Updating the values of a specific fee instance will affect all users connected to its fee group. Thus, the best practice for applying specific values of fees to particular user groups would be to create another fee group with the corresponding required payment or trading fee instances and assign it to those users
+
+[back to the top &#11023;](#table-of-contents)
+
+### 26. Question: How to update strategy markups?
+#### roles: [`admin`]
+
+### Answer:
+
+```graphql
+mutation {
+  update_instrument_strategy(
+    instrument_strategy_id: "BTCUSDT-TEST"
+    markup_ask: 1.00
+    markup_bid: 1.00
+  )
+}
+```
+
+### Response:
+
+```json
+{
+  "data": {
+    "update_instrument_strategy": true
   }
 }
 ```
